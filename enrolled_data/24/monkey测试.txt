@@ -1,0 +1,139 @@
+为什么要开展压力测试？
+提高产品的稳定性，70%以上用户会遇到不稳定问题
+提高产品的留存率，
+
+什么时候开展压力测试
+首轮功能测试通过后下班夜间进行
+
+Monkey：发送伪随机用户使用的工具
+Monkey Script   是一组可以被Monkeys识别的命令集合，完成重复性操作
+MonkeyRunner 提供一系列的API，可以完成模拟事件及截图操作
+
+monkey和monkeyrunner区别：
+1.monkey在adb shell中，生成用户或系统的伪随机事件
+2.monkeyrunner通过API定义特定命令和事件控制设备
+
+压力测试结果分析
+   什么是crash：即崩溃，应用程序在使用过程中，非正常退出  
+   什么是anr：程序出现响应延时时间过长
+
+adb install apk包名
+adb shell monkey 1000
+adb shell "logcat | busybox grep START"             获取包名
+adb shell monkey -p 包名 --throttle 100 1000    加上各个时间间隔时间100毫秒
+adb shell monkey -p 包名 -s 100 1000                seed值，产生一个唯一的操作序列
+ adb shell monkey -v -p 包名  --pct-touch 100 1000          触摸事件（点击事件）
+ adb shell monkey -v -p 包名  --pct-motion 100 1000        动作事件
+  adb shell monkey -v -p 包名  --pct-trackball 100 1000     轨迹球事件比分比
+  adb shell monkey -v -p 包名  --pct-nav 100 1000             基本导航事件百分比，输入设备的上下左右
+  adb shell monkey -v -p 包名  --pct-majornav 100 1000 主要导航事件百分比，兼任中间键、返回键、菜单按键
+  adb shell monkey -v -p 包名  --pct-syskeys 100 1000        系统导航事件百分比，HOME、BACK、拨号及音量键
+   adb shell monkey -v -p 包名  --pct-appswitch 100 1000   设定启动Activity的事件百分比
+   adb shell monkey -v -p 包名 --pct-anyevent 100 1000     设定不常用事件的百分比
+   
+adb shell monkey -v -p 包名  --ignore-crashes 1000        遇到崩溃事件继续执行
+adb shell monkey -v -p 包名  --ignore-timeouts 1000      遇到超时事件继续执行
+
+crash结果析取：从crash地方开始把报错信息保存起来
+ANR结果析取：执行monkey过程中把anr开始保存信息保存起来，手动取data/anr/traces.txt
+
+Monkey Script：完成一些固定的操作
+adb shell monkey -f 脚本文件 执行次数                   执行命令
+adb push 脚本文件 /data/local/tmp/       
+测试用的APK里面需要在Activity中加入android.exported="true"属性值
+1.DispatchTrackball命令：轨迹球事件
+   DispatchTrackball(long downtime,long eventide,int action,float x,float y,float pressure,float size,
+   int metastate,float xprecision,float yprecision,int device,int edgeflags)
+   action 0代表按下，1代表弹起，x和y代表的坐标点
+ 2.DispatchPointer命令：点击事件
+   DispatchPointer(long downtime,long eventide,int action,float x,float y,float pressure,float size,
+   int metastate,float xprecision,float yprecision,int device,int edgeflags)
+   action 0代表按下，1代表弹起，x和y代表的坐标点
+ 3.DispatchString命令：输出字符串事件
+   DispatchString(string text)                输入对应字符串
+4.LaunchActivity命令：启动应用
+   LaunchActivity(package,Activity)       第一个参数指启动的包名，第二个参数指启动的页面名称
+ 5.UserWait命令：等待事件
+    UserWait(1000)                   写入一个等待时间的值，这里的值是毫秒，默认是1000毫秒
+ 6.DispatchPress命令：按下键值
+    DispatchPress(int keycode)       回车键 ，输入键值，keycode 66
+    
+ 脚本例子:输入框内输入内容，然后点击搜索
+ typ=user
+ count=10
+ speed=1.0
+ start data >>
+ LaunchActivity(com.example.zhangjian.minibrowser2,.MainActivity)
+ UserWait(2000)
+ DispatchPointer(10,10,0,100,100,1,1,-1,1,1,0,0)
+ DispatchPointer(10,10,1,100,100,1,1,-1,1,1,0,0)
+ DispatchString(test)
+ UserWait(1000)
+ DispatchPress(66)
+ UserWait(1000)
+ DispatchPointer(10,10,0,400,100,1,1,-1,1,1,0,0)
+ DispatchPointer(10,10,1,400,100,1,1,-1,1,1,0,0)
+ UserWait(6000) 
+ DispatchPointer(10,10,0,300,100,1,1,-1,1,1,0,0)
+ DispatchPointer(10,10,1,300,100,1,1,-1,1,1,0,0)
+   
+  MonkeyRunner 
+  1.MonkeyRunner API-alert：警告框
+   void alert(string message,string title,string okTitle)
+   脚本列子：
+   from com.android.monkeyrunner import MonkeyRunner
+   MonkeyRunner.alert('Hello mook friends','This is title','OK')           第一个是警告框内容，第一个参数是警告框标题
+   
+   2.MonkeyRunner API-waitForConnection:等待设备链接，有多个device id,需要指明具体哪个设备
+   waitForConnection(float timeouts,string deviceid)     第一个参数代表链接过程中超时时间，第二个参数是链接设备名称
+   3.MonkeyDevice API-drag：拖动
+   drag(tuple start,tuple end,float duration,integer steps)
+   start起点位置，end终点位置，duration手势持续的时间，steps插值点的步数，默认10
+   4.MonkeyDevice API-press:按键
+   press(string keycode,dictionary type)
+   keycode名，Down、UP、DOWN_AND_UP
+   5.MonkeyDevice API-startActivity:启动应用
+   startActivity(package+'/'+activity)             第一个参数是包名，/后面的是activity名
+   6.MonkeyDevice API-touch:点击
+   touch(integer x,integer y,integer type)      第一个参数是X坐标，第二个参数是Y坐标，第三个参数是操作类型
+   x坐标值，y坐标值，type：Down、UP、DOWN_AND_UP
+   7 .MonkeyDevice API-type:输入
+   type(string message)
+   8.MonkeyDevice API-takeSnapshot:截屏
+   Monkeylmage takeSnapshot()
+   9. Monkeylmage API-sameAs:图像对比
+   boolean sameAs(Monkeylmage other,float percent)
+   10.Monkeylmage API-writetoFile:保存图像文件
+   viod writetoFile(string path,string format)               第一个参数是存储的路径，第二个参数是存储的类型
+   
+   脚本例子:输入框内输入内容，然后点击搜索并截图保存
+   from com.android.monkeyrunner import MonkeyRunner,MonkeyDevice,Monkeylmage
+   #连接设备
+   device=MonkeyRunner.waitForConnection(3,设备名)
+   #启动app
+   device.startActivity('com.example.zhangjian.minibrowser2/con.example.zhangjian.minibrowser2.myapplication.MainActivity')
+   MonkeyRunner.sleep(2) 
+   #点击搜索框
+   device.touch (100,100,'DOWN_AND_UP')
+    MonkeyRunner.sleep(1) 
+    #输入查询词
+    device.type('test')
+    MonkeyRunner.sleep(1) 
+    #点击回车键
+    device.press('KEYCODE_ENTER','DOWN_AND_UP')
+    MonkeyRunner.sleep(1) 
+    #点击搜索按钮
+    device.touch (400,100,'DOWN_AND_UP')
+    MonkeyRunner.sleep(6) 
+    #截图
+    image=device.takeSnapshot()
+    image.writetoFile('./test.png','png')
+    #点击清楚按钮
+    device.touch (300,100,'DOWN_AND_UP')
+    MonkeyRunner.sleep(3) 
+    
+    
+    
+    
+    
+ 

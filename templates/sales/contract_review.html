@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+
+{% block page-content %}
+    学员资料审核记录
+
+    <div id="content">
+        <h3>学员基本信息审核</h3>
+        {{ customer_form.as_p }}
+        <form class="form-horizontal col-lg-7" role="form" method="post">{% csrf_token %}
+            <hr>
+            <h3>学员报名记录</h3>
+            {{ enroll_form.as_p }}
+            <a  href="{% url 'enrollment_rejection' enroll_obj.id  %}" class="btn btn-danger">驳回合同</a>
+            <a href="{% url 'payment' enroll_obj.id %}" type="submit" class="btn btn-success pull-right" >审核通过</a>
+        </form>
+        <div class="row">
+            <div>
+                <ul>
+                    {% for k,v in msgs.items %}
+                        <li>{{ k }}:{{ v }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block bottom-js %}
+
+{% endblock %}

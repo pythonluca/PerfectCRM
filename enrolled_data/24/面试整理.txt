@@ -1,0 +1,42 @@
+自动化测试：   
+selenium 是基于Web的最流行的UI自动化测试工具, 通过id,name,class,xpath, css selector这些属性，通过webDriver打开浏览器模拟用户进行点击操作
+appium（啊饼）是一个免费开源移动应用UI测试框架，环境：ANDROID SDK/JDK/Node.JS/Selenium Webdriver/APPIUM/Pycharm(Python编译器),模拟用户点击、滑动等操作
+monkey  发送伪随机事件，通过设定事件件类型(点击、返回、菜单、上下左右、音量大小)+事件百分比，发送次数等
+
+兼容性测试网页：不同端浏览器、不同的分辨率/尺寸手机
+兼任性测试APP：操作系统、不同的分辨率、尺寸、不同的硬件类型等
+接口测试：postman、fiddler、python脚本(urllib模块)，是否能正常获取到服务端返回的数据，数据是否正常，数据是否有按照接口文档规定执行
+
+性能测试网页：
+1.、jmeter、python脚本通过多线程并发的方式，测试一个网页性能，比如设置1000个线程模拟1000个用户并发，平均响应时间、最小响应时间、最大响应时间、出错率、吞吐量等，然后可以通过
+2.APP小功能，通过耗电量、耗网量、CPU占用率等测试一个APK的性能（itest、emmagee）
+3.gtmetrix：通过利用浏览器缓存、删除重定向链接、启用压缩等方式优化性能
+
+mysql:
+查询：select part_nid,COUNT(din) from userinfo group by part_nid; 
+ (where条件、通配符like、分页limit、排序asc/desc、分组group by、组合union、连表left join)、desc
+插入：INSERT into tb5(nid,name) VALUES(12,"谢谢")     UPDATE tb30 set name = 'shen' WHERE nid>1;    
+         DROP TABLE tb1删除表、DELETE FROM tb5删除表内容、ALTER table tb2 add adds int;增加列
+创建：CREATE TABLE tb3()、主键PRIMARY KEY、约束
+存储过程：in\out\inout,执行存储过程call p1()、事务、视图
+linux：
+切换目录：cd /etc/绝对路径、cd .../usr/相对路径、 cd..返回上一级、cd返回家目录
+查看当前目录：pwd、cp复制、rm -rf删除 、mv剪切、find [搜索范围] [搜索条件]搜索
+查询目录内容：ls -a显示所有 -l显示详细信息 -h文件大小 -i索引，查找文件数ls -l | grep "^-"
+创建目录:mkdir -p name、创建文件touch name
+重启reboot
+服务启动sudo ps -e |grep ssh    查看进程ps auxw      查看你端口：netstat -ntpl 
+
+adb常用命令
+adb install <apk文件路径> 安装      adb uninstall apk包名 卸载     
+adb reboot 重启     adb devices显示连接设备    kill 中止进程
+adb pull <设备中的文件路径> <本地路径> 复制文件到本地
+adb push <本地文件路径> <设备中的路径> 复制文件到设备
+adb  logcat  -v threadtime > d:\app\logcat\log.txt 抓log
+
+
+
+
+
+
+
